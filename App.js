@@ -7,8 +7,10 @@ import {
   TouchableOpacity,
   TextInput,
   ScrollView,
+  Alert,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Fontisto } from "@expo/vector-icons";
 import { theme } from "./colors";
 
 const STORAGE_KEY = "@toDos";
@@ -51,6 +53,20 @@ export default function App() {
     await saveToDos(newToDo);
     setText("");
   };
+  const deleteToDo = (key) => {
+    Alert.alert("Delete To Do?", "Are you sure?", [
+      { text: "Cancel" },
+      {
+        text: "Ok",
+        onPress: () => {
+          const newToDo = { ...toDos };
+          delete newToDo[key];
+          setToDos(newToDo);
+          saveToDos(newToDo);
+        },
+      },
+    ]);
+  };
   return (
     <View style={styles.container}>
       <StatusBar style="auto" />
@@ -86,6 +102,9 @@ export default function App() {
           toDos[key].working === working ? (
             <View style={styles.toDo} key={key}>
               <Text style={styles.toDoText}>{toDos[key].text}</Text>
+              <TouchableOpacity onPress={() => deleteToDo(key)}>
+                <Fontisto name="trash" size={20} color={theme.grey} />
+              </TouchableOpacity>
             </View>
           ) : null
         )}
@@ -119,6 +138,9 @@ const styles = StyleSheet.create({
     marginVertical: 15,
   },
   toDo: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     backgroundColor: theme.toDoBg,
     marginBottom: 12,
     paddingVertical: 15,
