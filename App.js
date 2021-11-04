@@ -12,6 +12,7 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Fontisto } from "@expo/vector-icons";
 import { theme } from "./colors";
+import Loading from "./loading";
 
 const STORAGE_KEY = "@toDos";
 
@@ -19,6 +20,7 @@ export default function App() {
   const [working, setWorking] = useState(true);
   const [text, setText] = useState("");
   const [toDos, setToDos] = useState({}); // hashmap
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     loadToDos();
@@ -39,6 +41,7 @@ export default function App() {
     try {
       const s = await AsyncStorage.getItem(STORAGE_KEY);
       setToDos(JSON.parse(s));
+      setLoading(false);
     } catch (error) {
       console.log(error);
     }
@@ -67,7 +70,9 @@ export default function App() {
       },
     ]);
   };
-  return (
+  return loading ? (
+    <Loading />
+  ) : (
     <View style={styles.container}>
       <StatusBar style="auto" />
       <View style={styles.header}>
