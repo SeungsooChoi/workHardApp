@@ -15,6 +15,7 @@ import { theme } from "./colors";
 import Loading from "./loading";
 
 const STORAGE_KEY = "@toDos";
+const STORAGE_WORKING_KEY = "@working";
 
 export default function App() {
   const [working, setWorking] = useState(true);
@@ -24,7 +25,12 @@ export default function App() {
 
   useEffect(() => {
     loadToDos();
+    loadWorking();
   }, []);
+
+  useEffect(() => {
+    saveWorking();
+  }, [working]);
 
   const travel = () => setWorking(false);
   const work = () => setWorking(true);
@@ -69,6 +75,26 @@ export default function App() {
         },
       },
     ]);
+  };
+  const saveWorking = async () => {
+    const nowWorking = { working };
+    try {
+      await AsyncStorage.setItem(
+        STORAGE_WORKING_KEY,
+        JSON.stringify(nowWorking)
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const loadWorking = async () => {
+    try {
+      const s = await AsyncStorage.getItem(STORAGE_WORKING_KEY);
+      const { working: nowWorking } = JSON.parse(s);
+      setWorking(nowWorking);
+    } catch (error) {
+      console.log(error);
+    }
   };
   return loading ? (
     <Loading />
